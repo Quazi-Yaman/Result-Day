@@ -37,7 +37,7 @@ def get_student_dashboard(table, prn):
 
             published_results.append(item)
 
-    # Find latest semester
+    # Find latest published semester
     latest_result = None
 
     if published_results:
@@ -48,14 +48,19 @@ def get_student_dashboard(table, prn):
 
     return {
         "status": "success",
+
         "student": {
             "PRN": student.get("PRN"),
             "name": student.get("name"),
             "email": student.get("email"),
+            "phone": student.get("phone"),
+            "college": student.get("college"),
             "branch": student.get("branch"),
+            "admission_year": student.get("admission_year"),
             "current_year": student.get("current_year"),
             "current_semester": student.get("current_semester")
         },
+
         "latest_result": (
             {
                 "semester": latest_result.get("semester"),

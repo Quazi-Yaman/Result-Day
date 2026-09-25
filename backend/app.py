@@ -22,9 +22,9 @@ from exams import get_exam_schedule
 from subjects import get_current_subjects
 
 from release import (
-    schedule_result,
-    get_release_status,
-    publish_result
+    schedule_batch_result,
+    get_batch_release_status,
+    publish_batch_result
 )
 
 from notifications import (
@@ -53,6 +53,10 @@ dynamodb = boto3.resource(
 )
 
 table = dynamodb.Table(DYNAMODB_TABLE)
+autoscaling = boto3.client(
+    "autoscaling",
+    region_name=AWS_REGION
+)
 
 
 # =========================================================
@@ -299,7 +303,7 @@ def read_notification(prn, notification_id):
     "/admin/results/schedule",
     methods=["POST"]
 )
-def schedule_result_route():
+def schedule_batch_result_route():
     data = request.get_json() or {}
 
     prn = data.get("prn")
@@ -317,7 +321,7 @@ def schedule_result_route():
             )
         }, 400
 
-    result, status_code = schedule_result(
+    result, status_code = schedule_batch_result(
         table,
         prn,
         int(semester),
@@ -332,7 +336,7 @@ def schedule_result_route():
     methods=["GET"]
 )
 def release_status(prn, semester):
-    result, status_code = get_release_status(
+    result, status_code = get_batch_release_status(
         table,
         prn,
         semester
@@ -345,7 +349,7 @@ def release_status(prn, semester):
     "/admin/results/publish",
     methods=["POST"]
 )
-def publish_result_route():
+def publish_batch_result_route():
     data = request.get_json() or {}
 
     prn = data.get("prn")
@@ -357,7 +361,7 @@ def publish_result_route():
             "message": "PRN and semester are required"
         }, 400
 
-    result, status_code = publish_result(
+    result, status_code = publish_batch_result(
         table,
         prn,
         int(semester)
@@ -393,7 +397,36 @@ def admin_release_schedule():
 
     return result, status_code
 
+# =========================================================
+# AWS AUTO SCALING CONTROLS
+# =========================================================
 
+@app.route("/admin/aws/ec2/start", methods=["POST"])
+def start_ec2():
+    autoscaling.update_auto_scaling_group(
+        AutoScalingGroupName="result-day-asg",
+        MinSize=2,
+        DesiredCapacity=2
+    )
+
+    return {
+        "status": "success",
+        "message": "Result Day Auto Scaling started with 2 instances"
+    }, 200
+
+
+@app.route("/admin/aws/ec2/stop", methods=["POST"])
+def stop_ec2():
+    autoscaling.update_auto_scaling_group(
+        AutoScalingGroupName="result-day-asg",
+        MinSize=0,
+        DesiredCapacity=0
+    )
+
+    return {
+        "status": "success",
+        "message": "Result Day Auto Scaling stopped"
+    }, 200
 # =========================================================
 # RUN SERVER
 # =========================================================

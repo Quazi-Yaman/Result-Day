@@ -1,64 +1,57 @@
 from datetime import datetime, timezone
 
 
-def schedule_result(table, prn, semester, release_datetime):
-    result_key = f"RESULT#{prn}#SEM{semester}"
+def schedule_batch_result(table, batch, branch, semester, release_datetime):
+    """
+    Schedule a result release for an entire batch and branch.
+    """
 
-    response = table.get_item(
-        Key={
-            "PK": result_key
-        }
-    )
+    release_key = f"RELEASE#{batch}#{branch}#SEM{semester}"
 
-    result = response.get("Item")
-
-    if not result:
-        return {
-            "status": "error",
-            "message": "Result not found"
-        }, 404
-
-    table.update_item(
-        Key={
-            "PK": result_key
-        },
-        UpdateExpression="SET release_datetime = :release_datetime, #status = :status",
-        ExpressionAttributeNames={
-            "#status": "status"
-        },
-        ExpressionAttributeValues={
-            ":release_datetime": release_datetime,
-            ":status": "SCHEDULED"
+    table.put_item(
+        Item={
+            "PK": release_key,
+            "type": "RESULT_RELEASE",
+            "batch": batch,
+            "branch": branch,
+            "semester": str(semester),
+            "release_datetime": release_datetime,
+            "status": "SCHEDULED"
         }
     )
 
     return {
         "status": "success",
-        "message": "Result scheduled successfully",
-        "prn": prn,
+        "message": "Batch result scheduled successfully",
+        "batch": batch,
+        "branch": branch,
         "semester": semester,
         "release_datetime": release_datetime
     }, 200
 
 
-def get_release_status(table, prn, semester):
-    result_key = f"RESULT#{prn}#SEM{semester}"
+def get_batch_release_status(table, batch, branch, semester):
+    """
+    Check release status for an entire batch.
+    """
+
+    release_key = f"RELEASE#{batch}#{branch}#SEM{semester}"
 
     response = table.get_item(
         Key={
-            "PK": result_key
+            "PK": release_key
         }
     )
 
-    result = response.get("Item")
+    release = response.get("Item")
 
-    if not result:
+    if not release:
         return {
-            "status": "error",
-            "message": "Result not found"
-        }, 404
+            "status": "success",
+            "release_status": "NOT_SCHEDULED"
+        }, 200
 
-    release_datetime = result.get("release_datetime")
+    release_datetime = release.get("release_datetime")
 
     if not release_datetime:
         return {
@@ -78,31 +71,36 @@ def get_release_status(table, prn, semester):
         "status": "success",
         "release_status": release_status,
         "release_datetime": release_datetime,
-        "prn": prn,
+        "batch": batch,
+        "branch": branch,
         "semester": semester
     }, 200
 
 
-def publish_result(table, prn, semester):
-    result_key = f"RESULT#{prn}#SEM{semester}"
+def publish_batch_result(table, batch, branch, semester):
+    """
+    Manually publish a batch result.
+    """
+
+    release_key = f"RELEASE#{batch}#{branch}#SEM{semester}"
 
     response = table.get_item(
         Key={
-            "PK": result_key
+            "PK": release_key
         }
     )
 
-    result = response.get("Item")
+    release = response.get("Item")
 
-    if not result:
+    if not release:
         return {
             "status": "error",
-            "message": "Result not found"
+            "message": "Batch result release configuration not found"
         }, 404
 
     table.update_item(
         Key={
-            "PK": result_key
+            "PK": release_key
         },
         UpdateExpression="SET #status = :status",
         ExpressionAttributeNames={
@@ -115,7 +113,8 @@ def publish_result(table, prn, semester):
 
     return {
         "status": "success",
-        "message": "Result published successfully",
-        "prn": prn,
+        "message": "Batch result published successfully",
+        "batch": batch,
+        "branch": branch,
         "semester": semester
     }, 200
