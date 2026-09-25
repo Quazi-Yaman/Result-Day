@@ -1,18 +1,26 @@
 from datetime import datetime, timezone
 
 
-def schedule_batch_result(table, batch, branch, semester, release_datetime):
+def schedule_batch_result(
+    table,
+    batch,
+    branch,
+    semester,
+    release_datetime
+):
     """
-    Schedule a result release for an entire batch and branch.
+    Schedule results for an entire batch + branch + semester.
     """
 
-    release_key = f"RELEASE#{batch}#{branch}#SEM{semester}"
+    release_key = (
+        f"RELEASE#{batch}#{branch}#SEM{semester}"
+    )
 
     table.put_item(
         Item={
             "PK": release_key,
             "type": "RESULT_RELEASE",
-            "batch": batch,
+            "batch": str(batch),
             "branch": branch,
             "semester": str(semester),
             "release_datetime": release_datetime,
@@ -30,12 +38,19 @@ def schedule_batch_result(table, batch, branch, semester, release_datetime):
     }, 200
 
 
-def get_batch_release_status(table, batch, branch, semester):
+def get_batch_release_status(
+    table,
+    batch,
+    branch,
+    semester
+):
     """
-    Check release status for an entire batch.
+    Get release status for a batch + branch + semester.
     """
 
-    release_key = f"RELEASE#{batch}#{branch}#SEM{semester}"
+    release_key = (
+        f"RELEASE#{batch}#{branch}#SEM{semester}"
+    )
 
     response = table.get_item(
         Key={
@@ -51,7 +66,9 @@ def get_batch_release_status(table, batch, branch, semester):
             "release_status": "NOT_SCHEDULED"
         }, 200
 
-    release_datetime = release.get("release_datetime")
+    release_datetime = release.get(
+        "release_datetime"
+    )
 
     if not release_datetime:
         return {
@@ -59,17 +76,26 @@ def get_batch_release_status(table, batch, branch, semester):
             "release_status": "NOT_SCHEDULED"
         }, 200
 
-    release_time = datetime.fromisoformat(release_datetime)
+    release_time = datetime.fromisoformat(
+        release_datetime
+    )
+
+    if release_time.tzinfo is None:
+        release_time = release_time.replace(
+            tzinfo=timezone.utc
+        )
+
     now = datetime.now(timezone.utc)
 
-    if now >= release_time:
-        release_status = "PUBLISHED"
-    else:
-        release_status = "SCHEDULED"
+    status = (
+        "PUBLISHED"
+        if now >= release_time
+        else "SCHEDULED"
+    )
 
     return {
         "status": "success",
-        "release_status": release_status,
+        "release_status": status,
         "release_datetime": release_datetime,
         "batch": batch,
         "branch": branch,
@@ -77,12 +103,20 @@ def get_batch_release_status(table, batch, branch, semester):
     }, 200
 
 
-def publish_batch_result(table, batch, branch, semester):
+def publish_batch_result(
+    table,
+    batch,
+    branch,
+    semester
+):
     """
-    Manually publish a batch result.
+    Manually publish results for an entire
+    batch + branch + semester.
     """
 
-    release_key = f"RELEASE#{batch}#{branch}#SEM{semester}"
+    release_key = (
+        f"RELEASE#{batch}#{branch}#SEM{semester}"
+    )
 
     response = table.get_item(
         Key={
@@ -95,9 +129,11 @@ def publish_batch_result(table, batch, branch, semester):
     if not release:
         return {
             "status": "error",
-            "message": "Batch result release configuration not found"
+            "message":
+                "Batch result release configuration not found"
         }, 404
 
+    # Mark the release configuration as published.
     table.update_item(
         Key={
             "PK": release_key

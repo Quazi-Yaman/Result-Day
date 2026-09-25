@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Result Day — Admin Portal</title>
+
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+<!-- =====================================================
+     LOGIN SCREEN
+===================================================== -->
+
+<div id="loginScreen" class="login-screen">
+
+    <div class="login-card">
+
+        <div class="brand-mark">RD</div>
+
+        <h1>Result Day</h1>
+        <p class="login-subtitle">Administrator Portal</p>
+
+        <form id="loginForm">
+
+            <div class="input-group">
+                <label for="adminUsername">Admin Username</label>
+                <input
+                    type="text"
+                    id="adminUsername"
+                    placeholder="Enter admin username"
+                    autocomplete="username"
+                    required
+                >
+            </div>
+
+            <div class="input-group">
+                <label for="adminPassword">Password</label>
+
+                <div class="password-wrapper">
+                    <input
+                        type="password"
+                        id="adminPassword"
+                        placeholder="Enter password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        id="togglePassword"
+                        class="password-toggle"
+                    >
+                        Show
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="primary-btn login-btn">
+                Sign In
+            </button>
+
+            <p id="loginMessage" class="login-message"></p>
+
+        </form>
+
+        <div class="login-footer">
+            <span>Result Day Administration</span>
+            <span>Secure Access</span>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     ADMIN APPLICATION
+===================================================== -->
+
+<div id="adminApp" class="admin-app hidden">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="sidebar-brand">
+
+            <div class="brand-mark small">RD</div>
+
+            <div>
+                <strong>Result Day</strong>
+                <span>Admin Portal</span>
+            </div>
+
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+            <button class="nav-item active" data-section="dashboard">
+                <span class="nav-icon">⌂</span>
+                Dashboard
+            </button>
+
+            <button class="nav-item" data-section="release">
+                <span class="nav-icon">◷</span>
+                Result Release
+            </button>
+
+            <button class="nav-item" data-section="students">
+                <span class="nav-icon">♙</span>
+                Students
+            </button>
+
+            <button class="nav-item" data-section="results">
+                <span class="nav-icon">▤</span>
+                Results
+            </button>
+
+            <button class="nav-item" data-section="notifications">
+                <span class="nav-icon">◉</span>
+                Notifications
+            </button>
+
+            <div class="nav-divider"></div>
+
+            <p class="nav-heading">INFRASTRUCTURE</p>
+
+            <button class="nav-item" data-section="traffic">
+                <span class="nav-icon">↗</span>
+                Traffic & ALB
+            </button>
+
+            <button class="nav-item" data-section="compute">
+                <span class="nav-icon">▣</span>
+                EC2 & Scaling
+            </button>
+
+            <button class="nav-item" data-section="monitoring">
+                <span class="nav-icon">◒</span>
+                Monitoring
+            </button>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="admin-mini-profile">
+                <div class="avatar">A</div>
+
+                <div>
+                    <strong>Administrator</strong>
+                    <span>System Admin</span>
+                </div>
+            </div>
+
+            <button id="logoutBtn" class="logout-btn">
+                ⇥ Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <button id="menuBtn" class="menu-btn">
+                ☰
+            </button>
+
+            <div class="topbar-title">
+                <h2 id="pageTitle">Admin Dashboard</h2>
+                <span id="pageSubtitle">
+                    Result Day system overview
+                </span>
+            </div>
+
+            <div class="topbar-actions">
+
+                <button id="refreshBtn" class="icon-btn" title="Refresh">
+                    ↻
+                </button>
+
+                <div class="admin-top-profile">
+                    <div class="avatar">A</div>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================================
+             DASHBOARD
+        ================================================== -->
+
+        <section id="dashboard" class="page-section active">
+
+            <div class="welcome-row">
+
+                <div>
+                    <p class="eyebrow">SYSTEM OVERVIEW</p>
+                    <h1>Good day, Administrator.</h1>
+                    <p>
+                        Monitor result publishing, students and infrastructure
+                        from one place.
+                    </p>
+                </div>
+
+                <div class="system-status">
+                    <span class="status-dot"></span>
+                    System Online
+                </div>
+
+            </div>
+
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <div class="stat-icon blue">ST</div>
+                    <div>
+                        <span>Total Students</span>
+                        <strong id="totalStudents">—</strong>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon green">RP</div>
+                    <div>
+                        <span>Published Results</span>
+                        <strong id="publishedResults">—</strong>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon orange">SR</div>
+                    <div>
+                        <span>Scheduled Results</span>
+                        <strong id="scheduledResults">—</strong>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon purple">EC</div>
+                    <div>
+                        <span>EC2 Instances</span>
+                        <strong id="ec2Count">—</strong>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-grid">
+
+                <div class="panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>Result Release Status</h3>
+                            <p>Current publishing state</p>
+                        </div>
+
+                        <button
+                            class="small-btn"
+                            data-section="release"
+                        >
+                            Manage
+                        </button>
+                    </div>
+
+                    <div class="release-overview">
+
+                        <div class="release-circle">
+                            <span id="releasePercent">—</span>
+                            <small>Published</small>
+                        </div>
+
+                        <div class="release-details">
+
+                            <div class="detail-row">
+                                <span>Published</span>
+                                <strong id="dashPublished">—</strong>
+                            </div>
+
+                            <div class="detail-row">
+                                <span>Scheduled</span>
+                                <strong id="dashScheduled">—</strong>
+                            </div>
+
+                            <div class="detail-row">
+                                <span>Pending</span>
+                                <strong id="dashPending">—</strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h3>Application Health</h3>
+                            <p>Backend connectivity</p>
+                        </div>
+
+                        <span id="backendStatus" class="badge neutral">
+                            Checking...
+                        </span>
+
+                    </div>
+
+                    <div class="health-list">
+
+                        <div class="health-item">
+                            <span class="health-name">
+                                Flask API
+                            </span>
+
+                            <span id="flaskHealth" class="health-value">
+                                Checking
+                            </span>
+                        </div>
+
+                        <div class="health-item">
+                            <span class="health-name">
+                                DynamoDB
+                            </span>
+
+                            <span id="dynamoHealth" class="health-value">
+                                Checking
+                            </span>
+                        </div>
+
+                        <div class="health-item">
+                            <span class="health-name">
+                                Load Balancer
+                            </span>
+
+                            <span id="albHealth" class="health-value">
+                                —
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h3>Quick Actions</h3>
+                        <p>Frequently used administrator controls</p>
+                    </div>
+
+                </div>
+
+                <div class="quick-actions">
+
+                    <button class="quick-btn" data-section="release">
+                        <span>◷</span>
+                        Schedule Result
+                    </button>
+
+                    <button class="quick-btn" data-section="students">
+                        <span>♙</span>
+                        Student Management
+                    </button>
+
+                    <button class="quick-btn" data-section="compute">
+                        <span>▣</span>
+                        EC2 Controls
+                    </button>
+
+                    <button class="quick-btn" data-section="monitoring">
+                        <span>◒</span>
+                        View Monitoring
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- RESULT RELEASE -->
+<section class="page-section" id="page-release">
+
+            <div class="page-title-row">
+                <div>
+                    <span class="eyebrow">ACADEMIC CONTROL</span>
+                    <h1>Result Release</h1>
+                    <p>Schedule and publish results for an entire batch.</p>
+                </div>
+                <button class="icon-btn" onclick="loadSchedules()" title="Refresh schedules">&#8635;</button>
+            </div>
+
+    <div class="grid-2">
+
+        <!-- Schedule Batch Result -->
+        <div class="panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Schedule Batch Result</h2>
+                    <p>Set when results become available for the entire batch.</p>
+                </div>
+            </div>
+
+            <form id="scheduleForm">
+
+                <div class="form-group">
+                    <label for="scheduleBatch">Batch</label>
+                    <input
+                        type="text"
+                        id="scheduleBatch"
+                        placeholder="e.g. 2022"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="scheduleBranch">Branch</label>
+                    <input
+                        type="text"
+                        id="scheduleBranch"
+                        placeholder="e.g. AI & Data Science"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="scheduleSemester">Semester</label>
+                    <select id="scheduleSemester" required>
+                        <option value="">Select semester</option>
+                        <option value="1">Semester 1</option>
+                        <option value="2">Semester 2</option>
+                        <option value="3">Semester 3</option>
+                        <option value="4">Semester 4</option>
+                        <option value="5">Semester 5</option>
+                        <option value="6">Semester 6</option>
+                        <option value="7">Semester 7</option>
+                        <option value="8">Semester 8</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="scheduleReleaseTime">Release Date & Time</label>
+                    <input
+                        type="datetime-local"
+                        id="scheduleReleaseTime"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Schedule Batch Result
+                </button>
+
+            </form>
+        </div>
+
+
+        <!-- Publish Batch Result -->
+        <div class="panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Publish Batch Result</h2>
+                    <p>Manually publish results for the selected batch.</p>
+                </div>
+            </div>
+
+            <form id="publishForm">
+
+                <div class="form-group">
+                    <label for="publishBatch">Batch</label>
+                    <input
+                        type="text"
+                        id="publishBatch"
+                        placeholder="e.g. 2022"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="publishBranch">Branch</label>
+                    <input
+                        type="text"
+                        id="publishBranch"
+                        placeholder="e.g. AI & Data Science"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="publishSemester">Semester</label>
+                    <select id="publishSemester" required>
+                        <option value="">Select semester</option>
+                        <option value="1">Semester 1</option>
+                        <option value="2">Semester 2</option>
+                        <option value="3">Semester 3</option>
+                        <option value="4">Semester 4</option>
+                        <option value="5">Semester 5</option>
+                        <option value="6">Semester 6</option>
+                        <option value="7">Semester 7</option>
+                        <option value="8">Semester 8</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    Publish Batch Result
+                </button>
+
+            </form>
+        </div>
+
+    </div>
+
+
+    <!-- Scheduled Results -->
+    <div class="panel">
+        <div class="panel-header">
+            <div>
+                <h2>Scheduled Results</h2>
+                <p>Results currently configured for batch release.</p>
+            </div>
+
+            <button class="btn btn-secondary" onclick="loadSchedules()">
+                Refresh
+            </button>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Batch</th>
+                        <th>Branch</th>
+                        <th>Semester</th>
+                        <th>Status</th>
+                        <th>Release Time</th>
+                    </tr>
+                </thead>
+
+                <tbody id="scheduleTableBody">
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            No scheduled results found.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</section>
+
+
+        <!-- =================================================
+             STUDENTS
+        ================================================== -->
+
+        <section id="page-students" class="page-section">
+
+            <div class="section-heading">
+
+                <div>
+                    <p class="eyebrow">ACADEMIC DATA</p>
+                    <h1>Students</h1>
+                    <p>View registered students and account status.</p>
+                </div>
+
+                <button id="refreshStudentsBtn" class="small-btn">
+                    ↻ Refresh
+                </button>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="search-row">
+
+                    <input
+                        type="text"
+                        id="studentSearch"
+                        placeholder="Search by PRN or student name..."
+                    >
+
+                </div>
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>PRN</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Branch</th>
+                                <th>Year</th>
+                                <th>Account</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="studentTableBody">
+
+                            <tr>
+                                <td colspan="6" class="empty-state">
+                                    Load student data from the admin backend.
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             RESULTS
+        ================================================== -->
+
+        <section id="page-results" class="page-section">
+
+            <div class="section-heading">
+
+                <div>
+                    <p class="eyebrow">ACADEMIC RECORDS</p>
+                    <h1>Results</h1>
+                    <p>Review result publishing information.</p>
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="result-search">
+
+                    <div class="input-group">
+                        <label>Student PRN</label>
+
+                        <input
+                            type="text"
+                            id="resultSearchPrn"
+                            placeholder="2022AI001"
+                        >
+                    </div>
+
+                    <button
+                        id="searchResultsBtn"
+                        class="primary-btn"
+                    >
+                        Search Results
+                    </button>
+
+                </div>
+
+
+                <div id="resultSearchOutput" class="result-output">
+
+                    <div class="empty-state">
+                        Enter a PRN to view published results.
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             NOTIFICATIONS
+        ================================================== -->
+
+        <section id="page-notifications" class="page-section">
+
+            <div class="section-heading">
+
+                <div>
+                    <p class="eyebrow">COMMUNICATION</p>
+                    <h1>Notifications</h1>
+                    <p>Send announcements to students.</p>
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <form id="notificationForm">
+
+                    <div class="form-grid">
+
+                        <div class="input-group">
+                            <label>Student PRN</label>
+
+                            <input
+                                type="text"
+                                id="notificationPrn"
+                                placeholder="2022AI001"
+                                required
+                            >
+                        </div>
+
+                        <div class="input-group">
+                            <label>Notification Type</label>
+
+                            <select id="notificationType">
+                                <option value="GENERAL">General</option>
+                                <option value="RESULT">Result</option>
+                                <option value="EXAM">Examination</option>
+                                <option value="IMPORTANT">Important</option>
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label>Message</label>
+
+                        <textarea
+                            id="notificationMessage"
+                            rows="5"
+                            placeholder="Write notification..."
+                            required
+                        ></textarea>
+
+                    </div>
+
+
+                    <button class="primary-btn" type="submit">
+                        Send Notification
+                    </button>
+
+                    <p id="notificationStatus" class="form-message"></p>
+
+                </form>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             TRAFFIC
+        ================================================== -->
+
+        <section id="page-traffic" class="page-section">
+
+            <div class="section-heading">
+
+                <div>
+                    <p class="eyebrow">AWS INFRASTRUCTURE</p>
+                    <h1>Traffic & ALB</h1>
+                    <p>Monitor incoming Result Day traffic.</p>
+                </div>
+
+                <button id="refreshTrafficBtn" class="small-btn">
+                    ↻ Refresh
+                </button>
+
+            </div>
+
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <div class="stat-icon blue">ALB</div>
+
+                    <div>
+                        <span>Load Balancer</span>
+                        <strong id="trafficAlbStatus">—</strong>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon green">REQ</div>
+
+                    <div>
+                        <span>Requests / min</span>
+                        <strong id="requestsPerMinute">—</strong>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon orange">TG</div>
+
+                    <div>
+                        <span>Healthy Targets</span>
+                        <strong id="healthyTargets">—</strong>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h3>High Traffic Alarm</h3>
+                        <p>Configured ALB request monitoring.</p>
+                    </div>
+
+                    <span class="badge success">
+                        Configured
+                    </span>
+
+                </div>
+
+                <div class="alarm-card">
+
+                    <div>
+                        <strong>ResultDay-High-ALB-Traffic</strong>
+
+                        <p>
+                            Alerts when ALB request count exceeds
+                            500 requests in one minute.
+                        </p>
+                    </div>
+
+                    <div class="alarm-value">
+                        &gt; 500
+                        <small>requests / minute</small>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             EC2 / SCALING
+        ================================================== -->
+
+        <section id="page-compute" class="page-section">
+
+            <div class="section-heading">
+
+                <div>
+                    <p class="eyebrow">AWS COMPUTE</p>
+                    <h1>EC2 & Auto Scaling</h1>
+                    <p>Manage application compute infrastructure.</p>
+                </div>
+
+                <button id="refreshComputeBtn" class="small-btn">
+                    ↻ Refresh
+                </button>
+
+            </div>
+
+
+            <div class="panel infrastructure-warning">
+
+                <div class="warning-icon">!</div>
+
+                <div>
+
+                    <strong>AWS controls are protected</strong>
+
+                    <p>
+                        Start/stop actions will be connected through the
+                        secure admin backend. AWS credentials must never
+                        be placed inside this frontend.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="compute-grid">
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h3>EC2 Instances</h3>
+                            <p>Result Day application servers</p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="instance-list" id="instanceList">
+
+                        <div class="instance-card">
+
+                            <div class="instance-main">
+
+                                <div class="instance-icon">
+                                    EC2
+                                </div>
+
+                                <div>
+                                    <strong>
+                                        Result Day Application
+                                    </strong>
+
+                                    <span>
+                                        Loading instance information...
+                                    </span>
+                                </div>
+
+                            </div>
+
+                            <span class="badge neutral">
+                                —
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="compute-actions">
+
+                        <button
+                            id="startEc2Btn"
+                            class="success-btn"
+                        >
+                            ▶ Start EC2
+                        </button>
+
+                        <button
+                            id="stopEc2Btn"
+                            class="danger-btn"
+                        >
+                            ■ Stop EC2
+                        </button>
+
+                    </div>
+
+                    <p id="ec2ActionMessage" class="form-message"></p>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h3>Auto Scaling Group</h3>
+                            <p>Application capacity</p>
+                        </div>
+
+                        <span class="badge success">
+                            Active
+                        </span>
+
+                    </div>
+
+
+                    <div class="scaling-stats">
+
+                        <div>
+                            <span>Desired</span>
+                            <strong id="desiredCapacity">2</strong>
+                        </div>
+
+                        <div>
+                            <span>Minimum</span>
+                            <strong id="minCapacity">2</strong>
+                        </div>
+
+                        <div>
+                            <span>Maximum</span>
+                            <strong id="maxCapacity">4</strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="scaling-policy">
+
+                        <span>Target CPU</span>
+                        <strong>60%</strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             MONITORING
+        ================================================== -->
+
+        <section id="page-monitoring" class="page-section">
+
+            <div class="section-heading">
+
+                <div>
+                    <p class="eyebrow">OBSERVABILITY</p>
+                    <h1>Monitoring</h1>
+                    <p>Application and infrastructure health.</p>
+                </div>
+
+                <button id="refreshMonitoringBtn" class="small-btn">
+                    ↻ Refresh
+                </button>
+
+            </div>
+
+
+            <div class="monitor-grid">
+
+                <div class="panel monitor-card">
+
+                    <span class="monitor-label">
+                        Backend
+                    </span>
+
+                    <strong id="monitorBackend">
+                        Checking...
+                    </strong>
+
+                    <small>
+                        Flask / Gunicorn
+                    </small>
+
+                </div>
+
+
+                <div class="panel monitor-card">
+
+                    <span class="monitor-label">
+                        Database
+                    </span>
+
+                    <strong id="monitorDatabase">
+                        Checking...
+                    </strong>
+
+                    <small>
+                        Amazon DynamoDB
+                    </small>
+
+                </div>
+
+
+                <div class="panel monitor-card">
+
+                    <span class="monitor-label">
+                        Load Balancer
+                    </span>
+
+                    <strong id="monitorAlb">
+                        —
+                    </strong>
+
+                    <small>
+                        Application Load Balancer
+                    </small>
+
+                </div>
+
+
+                <div class="panel monitor-card">
+
+                    <span class="monitor-label">
+                        Scaling
+                    </span>
+
+                    <strong id="monitorScaling">
+                        Active
+                    </strong>
+
+                    <small>
+                        Auto Scaling Group
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h3>Architecture</h3>
+                        <p>Current Result Day traffic path</p>
+                    </div>
+
+                </div>
+
+
+                <div class="architecture">
+
+                    <div class="architecture-node">
+                        <strong>Student</strong>
+                        <span>Browser</span>
+                    </div>
+
+                    <div class="architecture-arrow">→</div>
+
+                    <div class="architecture-node">
+                        <strong>S3</strong>
+                        <span>Frontend</span>
+                    </div>
+
+                    <div class="architecture-arrow">→</div>
+
+                    <div class="architecture-node">
+                        <strong>ALB</strong>
+                        <span>Traffic</span>
+                    </div>
+
+                    <div class="architecture-arrow">→</div>
+
+                    <div class="architecture-node">
+                        <strong>ASG</strong>
+                        <span>EC2</span>
+                    </div>
+
+                    <div class="architecture-arrow">→</div>
+
+                    <div class="architecture-node">
+                        <strong>DynamoDB</strong>
+                        <span>Results</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- TOAST -->
+
+<div id="toast" class="toast"></div>
+
+
+<script src="admin.js"></script>
+
+</body>
+</html>
